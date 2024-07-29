@@ -39,17 +39,15 @@ def get_dominant_color():
     # Flatten the image and get the unique colors with their counts
     unique_colors, counts = np.unique(np_img.reshape(-1, np_img.shape[2]), axis=0, return_counts=True)
     
-    # Sort the colors by their counts in descending order
-    sorted_colors = unique_colors[np.argsort(counts)[::-1]]
-    
-    # Iterate through the sorted colors and find the first one that is not too close to white or black
-    for r, g, b in sorted_colors:
-        hsv = colorsys.rgb_to_hsv(r/255, g/255, b/255)
-        if hsv[1] > 0.3 and hsv[2] > 0.3:
-            return int(r), int(g), int(b)
-    
-    # If no suitable color is found, return a default value
-    return 128, 128, 128
+    # Find the most predominant color that is not too close to white or black
+    max_count_idx = np.argmax(counts)
+    r, g, b = unique_colors[max_count_idx]
+    hsv = colorsys.rgb_to_hsv(r/255, g/255, b/255)
+    if hsv[1] > 0.3 and hsv[2] > 0.3:
+        return int(r), int(g), int(b)
+    else:
+        # If the most predominant color is too close to white or black, return a default value
+        return 128, 128, 128
 
 def publish_screen_color():
     global prev_color, target_color
