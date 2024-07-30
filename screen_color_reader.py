@@ -64,6 +64,7 @@ class ScreenColorPublisher:
         self.color_history = deque(maxlen=5)
         self.ema_color = (0, 0, 0)
         self.ema_alpha = 0.3
+        self.running = True
 
     def get_dominant_color(self) -> Tuple[int, int, int]:
         current_time = time.time()
@@ -138,7 +139,7 @@ class ScreenColorPublisher:
         last_published_color = None
         last_published_time = 0
 
-        while True:
+        while self.running:
             try:
                 new_color = self.get_dominant_color()
                 current_time = time.time()
@@ -182,10 +183,17 @@ class ScreenColorPublisher:
             payload = {"cmd": "setRGB", "payload": f"{r} {g} {b}"}
             self.mqtt_client.publish(Config.MQTT_TOPIC, payload)
             time.sleep(0.01)
+        
+        # Ensure the final color is sent
+        payload = {"cmd": "setRGB", "payload": f"{self.target_color[0]} {self.target_color[1]} {self.target_color[2]}"}
+        self.mqtt_client.publish(Config.MQTT_TOPIC, payload)
 
     def send_turn_off_signal(self):
-        logger.info("Sending turn off signal")
+        self.running = False  # Stop the color detection thread
+        time.sleep(Config.UPDATE_INTERVAL * 2)  # Wait for the thread to stop
+        self.prev_color = self.target_color
         self.target_color = (0, 0, 0)
+        logger.info(f"Color change: {self.prev_color} -> {self.target_color} (Black)")
         self.transition_color()
 
 def parse_arguments():
@@ -206,7 +214,6 @@ def main():
 
     publisher = ScreenColorPublisher(mqtt_client)
     publish_thread = threading.Thread(target=publisher.publish_color)
-    publish_thread.daemon = True
     publish_thread.start()
 
     try:
@@ -214,9 +221,15 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         logger.info("Application stopped by user")
-        publisher.send_turn_off_signal()
     finally:
+        logger.info("Sending turn off signal")
+        publisher.send_turn_off_signal()
+        # Wait for the transition to complete
+        time.sleep(Config.TRANSITION_DURATION + 0.1)
+        logger.info("Disconnecting MQTT client")
+        mqtt_client.client.disconnect()
         logger.info("Exiting application")
+        publish_thread.join(timeout=1)  # Wait for the publish thread to finish
 
 if __name__ == '__main__':
     main()
