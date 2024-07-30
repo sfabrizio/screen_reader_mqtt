@@ -10,6 +10,7 @@ This Python script captures the dominant color from your screen (with support fo
 - Smooth color transitions
 - Configurable update intervals and sensitivity
 - Differentiates between various shades of colors
+- Sends "turn off" signal (black color) when script is terminated
 
 ## Installation
 

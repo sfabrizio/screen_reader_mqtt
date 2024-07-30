@@ -183,6 +183,11 @@ class ScreenColorPublisher:
             self.mqtt_client.publish(Config.MQTT_TOPIC, payload)
             time.sleep(0.01)
 
+    def send_turn_off_signal(self):
+        logger.info("Sending turn off signal")
+        self.target_color = (0, 0, 0)
+        self.transition_color()
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Screen Color Publisher")
     parser.add_argument("--transition-duration", type=float, default=0.5, help="Color transition duration in seconds")
@@ -209,6 +214,9 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         logger.info("Application stopped by user")
+        publisher.send_turn_off_signal()
+    finally:
+        logger.info("Exiting application")
 
 if __name__ == '__main__':
     main()
