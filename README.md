@@ -1,4 +1,4 @@
-# Screen Color Publisher
+# Screen Color Reader MQTT
 
 This Python script captures the dominant color from your screen (with support for extended displays) and publishes it to an MQTT broker. It's designed to work seamlessly with home automation systems, allowing you to create dynamic lighting effects based on your screen content.
 
@@ -23,8 +23,8 @@ cd screen-color-publisher
 2. Create a virtual environment (optional but recommended):
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows use venv\Scripts\activate
+python -m venv screen-color
+source screen-color/bin/activate  # On Windows use venv\Scripts\activate
 ```
 
 3. Install the required packages:
