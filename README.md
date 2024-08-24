@@ -1,5 +1,12 @@
 # Screen Color Reader MQTT
 
+Kinda of Ambilight feature from Philips TV, but done by me so it will conect to all my led strips arround the house with mqtt messages. I did with that IA help but my ideas. I was testing Sonet 3.5 and I sastified with the results:
+
+## Demo Video
+
+[![Screen Color Reader MQTT Demo](https://img.youtube.com/vi/x_EGztl94cI/0.jpg)](https://www.youtube.com/watch?v=x_EGztl94cI)
+
+
 This Python script captures the dominant color from your screen (with support for extended displays) and publishes it to an MQTT broker. It's designed to work seamlessly with home automation systems, allowing you to create dynamic lighting effects based on your screen content.
 
 ## Features
