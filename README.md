@@ -1,6 +1,6 @@
 # Screen Color Reader MQTT
 
-Kinda of Ambilight feature from Philips TV, but done by me so it will conect to all my led strips arround the house with mqtt messages. I did with that IA help but my ideas. I was testing Sonet 3.5 and I sastified with the results:
+This project is inspired by the Ambilight feature from Philips TVs, but I've expanded it to connect to all my LED strips around the house using MQTT messages. I developed it using my own ideas with the assistance of AI (Claude 3.5 Sonnet). After testing, I'm very satisfied with the results. It brings a personalized Ambilight-like experience to my entire smart home setup.
 
 ## Demo Video
 
