@@ -30,27 +30,43 @@ class Config:
     COLOR_DIFFERENCE_THRESHOLD = 30
     FORCE_UPDATE_INTERVAL = 5
     COOLDOWN_PERIOD = 1.0
+    MQTT_RETRY_INTERVAL = 5  # New: Interval for MQTT connection retry in seconds
 
 class MQTTClient:
     def __init__(self):
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
+        self.connected = False
 
     def connect(self):
-        try:
-            self.client.connect(Config.MQTT_BROKER_HOST, Config.MQTT_BROKER_PORT)
-            self.client.loop_start()
-        except Exception as e:
-            logger.error(f"Failed to connect to MQTT broker: {e}")
+        while not self.connected:
+            try:
+                self.client.connect(Config.MQTT_BROKER_HOST, Config.MQTT_BROKER_PORT)
+                self.client.loop_start()
+                logger.info("Successfully connected to MQTT broker")
+                self.connected = True
+            except Exception as e:
+                logger.error(f"Failed to connect to MQTT broker: {e}")
+                logger.info(f"Retrying in {Config.MQTT_RETRY_INTERVAL} seconds...")
+                time.sleep(Config.MQTT_RETRY_INTERVAL)
 
     def on_connect(self, client, userdata, flags, rc):
-        logger.info(f"Connected to MQTT broker with result code {rc}")
+        if rc == 0:
+            logger.info("Connected to MQTT broker")
+            self.connected = True
+        else:
+            logger.error(f"Failed to connect to MQTT broker with result code {rc}")
+            self.connected = False
 
     def publish(self, topic: str, payload: dict):
+        if not self.connected:
+            logger.warning("Not connected to MQTT broker. Skipping publish.")
+            return
         try:
             self.client.publish(topic, json.dumps(payload))
         except Exception as e:
             logger.error(f"Failed to publish MQTT message: {e}")
+            self.connected = False
 
 class ScreenColorPublisher:
     def __init__(self, mqtt_client: MQTTClient):
@@ -201,6 +217,7 @@ def parse_arguments():
     parser.add_argument("--transition-duration", type=float, default=0.5, help="Color transition duration in seconds")
     parser.add_argument("--update-interval", type=float, default=0.1, help="Screen color update interval in seconds")
     parser.add_argument("--capture-interval", type=float, default=0.1, help="Screen capture interval in seconds")
+    parser.add_argument("--mqtt-retry-interval", type=float, default=5, help="MQTT connection retry interval in seconds")
     return parser.parse_args()
 
 def main():
@@ -208,6 +225,7 @@ def main():
     Config.TRANSITION_DURATION = args.transition_duration
     Config.UPDATE_INTERVAL = args.update_interval
     Config.SCREEN_CAPTURE_INTERVAL = args.capture_interval
+    Config.MQTT_RETRY_INTERVAL = args.mqtt_retry_interval
 
     mqtt_client = MQTTClient()
     mqtt_client.connect()

@@ -11,6 +11,7 @@ This Python script captures the dominant color from your screen (with support fo
 - Configurable update intervals and sensitivity
 - Differentiates between various shades of colors
 - Sends "turn off" signal (black color) when script is terminated
+- Automatically retries MQTT connection if it fails
 
 ## Installation
 
@@ -49,6 +50,7 @@ python screen_color_publisher.py
 | `--transition-duration` | Color transition duration in seconds | 0.5 |
 | `--update-interval` | Screen color update interval in seconds | 0.1 |
 | `--capture-interval` | Screen capture interval in seconds | 0.1 |
+| `--mqtt-retry-interval` | MQTT connection retry interval in seconds | 5 |
 
 ### Examples
 
@@ -68,6 +70,11 @@ python screen_color_publisher.py --transition-duration 1.0
 python screen_color_publisher.py --update-interval 0.5 --capture-interval 0.5
 ```
 
+4. Change MQTT retry interval:
+```bash
+python screen_color_publisher.py --mqtt-retry-interval 10
+```
+
 ## Configuration
 
 Edit the `Config` class in the script to customize:
@@ -76,6 +83,7 @@ Edit the `Config` class in the script to customize:
 - Color difference threshold
 - Force update interval
 - Cooldown period
+- MQTT retry interval
 
 ## Troubleshooting
 
@@ -87,6 +95,7 @@ If you encounter any issues:
 
 For extended displays, make sure the script is detecting the correct monitor.
 
+If the MQTT connection fails, the script will automatically retry connecting at the specified interval.
 
 ## Contributing
 
