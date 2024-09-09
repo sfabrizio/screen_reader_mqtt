@@ -25,7 +25,7 @@ This Python script captures the dominant color from your screen (with support fo
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/screen-color-publisher.git
+git clone https://github.com/sfabrizio/screen-color-publisher.git
 cd screen-color-publisher
 ```
 
@@ -111,6 +111,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+
+## Extras 
+- Fimware of my preference use on my ESP8266s: [aurora](https://github.com/garhul/aurora) - Light's effects/animations for ws2812 led strips
+- My simple MQTT broker: [aurora-mqtt-server](https://github.com/sfabrizio/aurora-mqtt-server) - Simple mqtt broker/pub/sub over nodeJS  
 
 ## Acknowledgments
 
